@@ -1,0 +1,22 @@
+# version of docker compose syntax
+version : "3.9"
+
+#  consits of one or more service needed for our application
+#  build app in current directory(.)
+#  map port 8000 from local machine to port 8000 to container
+#  map app direcotry from local machine into the runnning container, instead of revuilding container everytime
+#  by default use this command when running docker compose file, this can be overriden when running docker-compose command
+services:
+  app:
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+
+# run 'docker-compose run --rm app sh -c "flake8"' for linting in python project through docker. flake8 is linting tool
