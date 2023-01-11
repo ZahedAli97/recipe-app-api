@@ -37,13 +37,20 @@ ARG DEV=false
 
 # if [ $DEV = "true" ];  shell scripting for installing dev dependencies when dev is true
 
+# postgresql-client is the dependcy docker uses to connect with psycopg2 python module for postgresql
+# Sets virtual depency package (directory) so that we can remove them later
+
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --home /app \
